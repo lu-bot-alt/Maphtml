@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!--兼容性 (A 'viewport' meta element was not specified)： 这个警告是客户端的，可以通过在 HTML 中添加代码解决。它影响页面在移动设备上的显示和缩放。添加它是个好习惯 --> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国产教融合试点城市地图</title>
+    <!--指定特定版本echarts和echarts-gl-->>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js"></script> 
+    
+    <style>
+        body { /* Apply to body for full page background */
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-image: url('./images/china_bg.jpg'); /* Adjust path as needed */
+            background-size: cover; /* Or 'contain', 'repeat' etc. */
+            background-position: center center;
+            background-attachment: fixed; /* Optional: makes background stay fixed when scrolling */
+        }
+
+        /* 设置容器宽高 */
+        #main {
+            width: 100%; /* 或者你需要的具体宽度 */
+            height: 2000px;
+            /* Make ECharts background transparent so the body background shows through */
+            /* Remove or comment out backgroundColor in ECharts option */
+        }
+    </style>
+</head>
+<body>
+    <!-- 3. 准备一个用于 ECharts 的 DOM 容器 -->
+    <div id="main"></div>
+
+    <script type="text/javascript">
+        // 4. 初始化 ECharts 实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 5. 准备你的城市数据 (从第一步复制过来)
+        const pilotCities = [
+            // ... 把上面整理好的数据粘贴在这里 ...  
+            { name: '天津市津南区', value: [117.36, 38.94], info: '成功举办2024年世界职业技术教育发展大会，成立世界职教发展联盟，建成国际化鲁班工坊，首创“工匠涵养班”培养模式，校企共建实训基地攻克多项“卡脖子”技术。' }, 
+            { name: '唐山市', value: [118.18, 39.63], info: '与中车唐山等企业共建5个产教融合园区，年均技术研发创收超亿元，建成高铁装备制造虚拟仿真实训基地，年培训社会人员超11万人次。' },
+            { name: '沈阳市', value: [123.46, 41.68], info: '入选省级市域产教联合体，建成13个产教融合实训基地，培育200家市级产教融合企业，连续7年举办现代化都市圈职业院校技能大赛，获国家级技能竞赛奖牌129枚。' },
+            { name: '上海临港新片区', value: [121.92, 30.90], info: '与特斯拉、蓝戈智能等共建10个产教融合产业学院，落地100余个产教项目，打造智能制造4.0实验室，建设国家级产教融合示范园区。' }, 
+            { name: '常州市', value: [119.97, 31.81], info: '打造“新能源产教联合体”常州模式，立项6个市级和2个省级联合体，获12项国家级教学成果奖，4个项目入选国家“教育强国”重点项目。' },
+            { name: '杭州市', value: [120.21, 30.25], info: '创建数字会展产教融合共同体，推动会展业数字化升级，入选首批市级行业产教融合共同体，助力建设国际会展名城。' },
+            { name: '宁波市', value: [121.62, 29.86], info: '入选国家产教融合城市典型案例，建成网络安全“现场工程师靶场项目”，获世界职校技能大赛金奖，校企联合开发课程覆盖“246”万千亿级产业集群。' },
+            { name: '合肥市', value: [117.23, 31.82], info: '构建“四位一体”实训体系，创建中德教育合作示范基地，投入5000万元建设产教融合实训基地，校企共建区域性现代职教集团。' },
+            { name: '泉州市', value: [118.68, 24.87], info: '培育62个校企共建产业学院，投入4.2亿元专项资金，推动85%毕业生本地就业，获批省级现代学徒制试点数量居福建省前列。' },
+            { name: '景德镇市', value: [117.18, 29.27], info: '建设国家级陶瓷产教融合实训基地，培育10家市级产教融合企业，景德镇皇窑陶瓷公司入选国家产教融合典型案例，打造“陶艺研学培训中心”特色项目。' },
+            { name: '济南市', value: [117.12, 36.65], info: '成立黄河流域产教联盟，建成智慧化产业人才数据中心，培育526家省级产教融合企业，举办全国技能大赛新增赛项，学生就业率超95%。' },
+            { name: '青岛市', value: [120.38, 36.07], info: '形成“中德双元制”合作模式，获国家教学成果二等奖，共建47个产业学院，胶州职教中心“市域产教联合体”入选全国典型案例。' },
+            { name: '郑州市', value: [113.63, 34.75], info: '实施现场工程师专项培养计划，培育15所示范性产业学院，中职毕业生升学率超60%，校企共建17个教师企业实践流动站。' }, 
+            { name: '襄阳市', value: [112.14, 32.04], info: '襄阳市产教融合信息...' },
+            { name: '长株潭城市群', value: [113.01, 28.20], info: '建成11个一体化职教共享实训基地，覆盖智能制造、化工等领域，湖南化工职院实训基地年服务企业超300家，联合体企业参与率达100%。' }, // 注意: 城市群可能需要特殊处理或选择代表性城市
+            { name: '广州市', value: [113.26, 23.13], info: '构建“校企双制、工学一体”模式，培育4家国家级产教融合企业，组建40个校企合作联盟，开设165个订单班，技能竞赛获奖数占全国1/25。' },
+            { name: '深圳市', value: [114.06, 22.54], info: '首创“课证共生共长”模式获国家级教学成果特等奖，培育79家产教融合型企业，与华为、大疆等共建实训基地，技能大赛累计获奖409项。 '},
+            { name: '柳州市', value: [109.43, 24.33], info: '广西（柳州）汽车产教联合体入选国家级案例，建成74家市级产教融合企业，制定全国首部地级市职教法规，开展55个对外合作项目，培养东盟留学生超1600人。' },
+            { name: '宜宾市', value: [104.64, 28.75], info: '形成“城市围绕大学建”发展模式，三江新区集聚12所高校与481家工业企业，建成产教融合实训基地，入选全国典型案例，校企合作覆盖100%规上企业。' },
+            { name: '咸阳市', value: [108.71, 34.33], info: '构建“1135”产教融合格局，8个市域联合体覆盖装备制造、现代农业等领域，培育16家产教融合企业，典型案例入选国家发改委全国推广名单。' },
+            { name: '巴音郭楞蒙古自治州', value: [116.34, 39.96], info: '投资29亿元建设产教融合示范园区，建成纺织、化工等实训基地，巴音学院“校中厂”实现学做一体，新疆科技学院推进应用型人才培养，服务“八大产业集群”战略。' } // 可能需要选择代表城市或区域中心点
+            // ... 其他城市 ...
+        ];
+        // !!! 新增代码：加载并注册地图数据 !!!
+        // 使用阿里云的 GeoJSON 数据源，比较稳定
+        const chinaJsonUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json';
+
+        fetch(chinaJsonUrl)
+            .then(response => response.json()) // 解析 JSON 数据
+            .then(chinaJson => { // 获取到 JSON 数据后
+                
+                echarts.registerMap('china', chinaJson); // ★★★ 关键：注册地图数据
+
+                // 6. 配置项 (Option)
+                var option = {
+                    title: {
+                        text: '国家产教融合试点城市分布（3D）',
+                        subtext: '数据截至2023年首批名单',
+                        left: 'center',
+                        textStyle: { color: '#fff' } // White text on dark background
+                    },
+                    tooltip: {
+                        trigger: 'item', // 触发类型：数据项图形触发
+                        formatter: function (params) {
+                            // ★★★ Important: Check params structure for 3D series ★★★
+                            // scatter3D might have slightly different params structure, use console.log(params) if needed
+                            if (params.componentType === 'series' && params.seriesType === 'scatter3D' && params.data) {
+                                let name = params.data.name || '';
+                                let info = params.data.info || '暂无详细信息';
+                                // Value might contain [lon, lat, alt] now
+                                // let value = params.value;
+                                return `${name}<br/>${info}`;
+                            } else if (params.componentType === 'geo3D') { // Check for geo3D component
+                                return params.name; // Still show province name on hover
+                            }
+                            return ''; // Default return if no match
+                        },
+                        
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)', // 白色半透明背景
+                        borderColor: '#ccc',
+                        borderWidth: 1,
+                        textStyle: {
+                            color: '#333'
+                        }
+                    },
+                    // ▼▼▼ REPLACED geo WITH geo3D ▼▼▼
+                    geo3D: {
+                        map: 'china', // Use the map registered earlier
+                        roam: true, // Enable mouse interaction (zoom, rotate, pan)
+                        boxWidth: 100, // Adjust the size of the 3D map area if needed
+                        boxHeight: 10, // Adjust the initial vertical "thickness" if not using terrain heightmap
+
+                        // --- Item Style (Surface Appearance) ---
+                        itemStyle: {
+                            // areaColor: '#465471', // Base color of the map surface
+                            areaColor: 'rgba(70, 84, 113, 0.8)', // Slightly transparent base color
+                            opacity: 1,
+                            borderWidth: 0.8,
+                            borderColor: '#6377AA' // Color for province borders
+                        },
+
+                        // --- Label Style (Province Names) ---
+                        label: {
+                            show: false, // Hide labels by default to avoid clutter
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 10,
+                                opacity: 0.8,
+                                backgroundColor: 'rgba(0,0,0,0)' // Transparent background
+                            }
+                        },
+
+                        // --- Emphasis Style (Hover Effect on Provinces) ---
+                        emphasis: {
+                            disabled: false,
+                            itemStyle: {
+                                areaColor: '#3A4A6D', // Color when hovering over a province
+                                borderColor: '#A3B8E1',
+                                borderWidth: 1
+                            },
+                            label: { // Show label on hover
+                                show: true,
+                                textStyle: {
+                                    color: '#fff',
+                                    fontSize: 12,
+                                }
+                            }
+                        },
+
+                        // --- Light Settings (Crucial for 3D Look) ---
+                        light: {
+                            main: { // Main directional light source
+                                intensity: 1.5,
+                                shadow: true, // Enable shadows
+                                shadowQuality: 'medium', // low, medium, high
+                                alpha: 60, // Angle from above (0 is top, 90 is horizontal)
+                                beta: 40 // Horizontal angle
+                            },
+                            ambient: { // Ambient light (fills dark areas)
+                                intensity: 0.4
+                            },
+                            ambientCubemap: { // Optional: Environment map for reflections (requires texture)
+                                // texture: 'path/to/cubemap.hdr', // Path to an HDR cubemap texture
+                                // diffuseIntensity: 0.5,
+                                // specularIntensity: 0.5
+                            }
+                        },
+
+                        // --- View Control (Camera Settings) ---
+                        viewControl: {
+                            projection: 'perspective', // perspective or orthographic
+                            autoRotate: false, // Set to true for automatic rotation
+                            autoRotateDirection: 'cw', // Clockwise (cw) or counter-clockwise (ccw)
+                            autoRotateSpeed: 5,
+                            distance: 110, // Initial camera distance (zoom level)
+                            minDistance: 40,
+                            maxDistance: 400,
+                            alpha: 45, // Vertical viewing angle
+                            beta: 0, // Horizontal viewing angle
+                            minAlpha: 10, // Limit vertical rotation
+                            maxAlpha: 90,
+                            minBeta: -80, // Limit horizontal rotation
+                            maxBeta: 80,
+                            center: [0, -10, 0], // Adjust initial camera focus point [x, y, z] offsets
+                            animation: true,
+                            animationDurationUpdate: 1000,
+                            animationEasingUpdate: 'cubicInOut'
+                        },
+
+                        // --- Terrain Settings (For Elevation) ---
+                        terrain: {
+                            show: true,
+                            // !!! This is the critical part for realistic terrain !!!
+                            heightMap: './images/china_heightmap.png', // <<<--- MUST FIND AND PROVIDE A VALID URL/PATH
+                            // You need a grayscale image where white = high elevation, black = low elevation
+                            // Search for "China DEM texture", "China heightmap image"
+                            // Example placeholder (WILL NOT WORK, just shows format): 'asset/heightmap.jpg'
+                            displacementScale: 1, // Exaggeration factor for height (adjust this value!)
+                            detailQuality: 'medium', // 'low', 'medium', 'high' - impacts performance
+                            shading: 'realistic', // 'color', 'lambert', 'phong', 'realistic'
+                            realisticMaterial: {
+                                //roughness: 0.7, // Adjust surface roughness
+                                //metalness: 0, // Adjust metalness
+                                //detailTexture: 'path/to/detail_texture.jpg' // Optional: Texture for fine details
+                            },
+                            // waterDepth: 5, // If heightmap has water levels defined
+                            lambertMaterial: { // Used if shading is 'lambert'
+                                //detailTexture: ...
+                            },
+                            colorMaterial: { // Used if shading is 'color'
+                                //detailTexture: ...
+                            }
+                        }
+                    }, // --- End of geo3D ---
+                    series: [
+                        {
+                            name: '试点城市', // Series name
+                            type: 'scatter3D', // <<<--- Changed type
+                            coordinateSystem: 'geo3D', // <<<--- Changed coordinate system
+                            data: pilotCities.map(function (item) { // <<<--- Transform data
+                                return {
+                                    name: item.name,
+                                    value: [item.value[0], item.value[1], 5], // lon, lat, altitude (set to 5 initially)
+                                    info: item.info // Pass along the info for the tooltip
+                                };
+                            }),
+                            symbolSize: 8, // Adjust size as needed
+                            itemStyle: {
+                                color: '#FFD700', // Bright color for points (e.g., Gold)
+                                opacity: 0.8,
+                                //borderWidth: 0.5, // Optional border
+                                //borderColor: '#fff'
+                            },
+                            emphasis: { // Hover effect for points
+                                itemStyle: {
+                                    color: '#FFFACD', // Brighter color on hover
+                                    //borderWidth: 1
+                                },
+                                label: { // Optionally show label on hover (can be cluttered)
+                                    show: false,
+                                    formatter: function(params) { return params.name; },
+                                    position: 'top',
+                                    textStyle: { color: '#fff', fontSize: 10 }
+                                }
+                            }
+                            // Note: The 'effectScatter' ripple effect is not directly available in scatter3D.
+                            // Emphasis scaling or color change is the primary way to highlight points.
+                        }
+                        // You can potentially add another scatter3D series for a different visual effect if needed
+                    ]
+                };
+
+                // 7. 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            
+            })
+            .catch(error => {
+                // 如果加载或注册地图数据失败，在控制台打印错误，并在页面上显示提示
+                console.error('地图数据加载或注册失败:', error);
+                document.getElementById('main').innerText = '地图数据加载失败，请检查网络连接或控制台错误信息。';
+            });
+
+        // 8. (可选) 让图表自适应窗口大小变化
+        window.addEventListener('resize', function () {
+            if (myChart) { // 检查 myChart 是否已初始化
+            myChart.resize();
+            }
+        });
+    </script>
+</body>
+</html>
