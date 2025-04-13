@@ -88,7 +88,14 @@
                                 // 确保 params.data 存在，并且有 name 和 info 属性
                                 let name = params.data.name || ''; // 获取城市名
                                 let info = params.data.info || '暂无详细信息'; // 获取 info，如果没有则显示默认文字
-                                return `${name}<br/>${info}`; // 返回格式化的字符串，用 <br/> 换行
+                                // *** 使用带样式的 div 包裹 info ***
+                                // - max-width: 限制最大宽度，根据需要调整数值 (例如 300px)
+                                // - white-space: normal !important; 允许文字正常换行
+                                // - word-wrap: break-word !important; 允许长单词或 URL 强制换行
+                                // - text-align: left !important; 可以让文字左对齐，更易读
+                                let styledInfo = `<div style="max-width: 300px; white-space: normal !important; word-wrap: break-word !important; text-align: left !important;">${info}</div>`;
+
+                                return `${name}<br/>${styledInfo}`; // 返回包含样式的 HTML,<br/>自动换行
                             }
                             // 判断悬停的是地图背景区域 (来自 geo 组件或 map 系列)
                             else if (params.componentType === 'geo' || params.seriesType === 'map') {
